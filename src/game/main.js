@@ -16,7 +16,7 @@ const { filmstrip } = require('engine/gfx/utils');
 // Loading screen
 const Loading = require('game/Loading');
 
-const MyPlayer = require('game/collision');
+const collision = require('game/collision');
 
 // Load some resources
 loader
@@ -48,26 +48,18 @@ class MyGame extends Game {
       .createLayer('ui');
 
     // Add some gfx elements
-    const label = BitmapText({
-      text: 'It Works! GG!',
-      font: '32px KenPixel',
-    }).addTo(this.sysGfx.layers['background']);
-    label.position.set(core.width / 2 - label.width / 2, core.height / 2 - label.height / 2);
+    this.text = new collision.MyText();
+    this.text.gfx.addTo(this.sysGfx.layers['background']);
+    this.text.position.set(core.width / 2 - this.text.gfx.width / 2, core.height / 2 - this.text.gfx.height / 2);
+    this.text.gfx.position.set(this.text.position.x, this.text.position.y);
 
-    this.monster = new MyPlayer();
-    // this.monster = AnimatedSprite({
-    //   textures: filmstrip(loader.resources['bat'].texture, 51, 57),
-    //   anims: [
-    //     ['fly', [0,1,2,3,4], { speed: 10 }],
-    //     ['atk', [5,6,7], { speed: 8, loop: false }],
-    //     ['hurt', [8,9,8,9,8,9], { speed: 8, loop: false }],
-    //     ['kill', [10,11,12,13], { speed: 8, loop: false }],
-    //   ],
-    // }).addTo(this.sysGfx.layers['background']);
+    this.monster = new collision.MyPlayer();
     this.monster.gfx.addTo(this.sysGfx.layers['background']);
-    this.monster.gfx.position.set(50);
+    this.monster.position.set(100, 100);
     this.monster.gfx.anchor.set(0.5);
     this.monster.gfx.play('fly');
+
+    console.log(this.monster);
 
     // Animate something
     // this.sysAnime.tween(this.monster)
@@ -93,21 +85,24 @@ class MyGame extends Game {
 
     if (this.sysInput.state('move_left')) {
       this.monster.gfx.scale.x = -1;
-      this.monster.gfx.x -= 4;
+      this.monster.position.x -= 4;
     }
 
     if (this.sysInput.state('move_right')) {
       this.monster.gfx.scale.x = 1;
-      this.monster.gfx.x += 4;
+      this.monster.position.x += 4;
     }
 
     if (this.sysInput.state('move_up')) {
-      this.monster.gfx.y -= 4;
+      this.monster.position.y -= 4;
     }
 
     if (this.sysInput.state('move_down')) {
-      this.monster.gfx.y += 4;
+      this.monster.position.y += 4;
     }
+
+    this.monster.gfx.x = this.monster.position.x;
+    this.monster.gfx.y = this.monster.position.y;
 
     super.fixedUpdate(dt, sec);
   }

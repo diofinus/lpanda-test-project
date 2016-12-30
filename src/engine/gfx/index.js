@@ -1,5 +1,5 @@
 const core = require('engine/core');
-const System = require('engine/System');
+const System = require('engine/system');
 const Vector = require('engine/Vector');
 const { removeItems } = require('engine/utils/array');
 const WebGLRenderer = require('./core/renderers/webgl/WebGLRenderer');

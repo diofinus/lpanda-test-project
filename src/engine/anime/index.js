@@ -11,7 +11,7 @@
  * @requires engine/anime/tween
  * @requires engine/anime/action
  */
-const System = require('engine/System');
+const System = require('engine/system');
 const { removeItems } = require('engine/utils/array');
 
 const Tween = require('./tween');

@@ -1,4 +1,4 @@
-const System = require('engine/System');
+const System = require('engine/system');
 const keyboard = require('./keyboard');
 const { removeItems } = require('engine/utils/array');
 
