@@ -42,6 +42,8 @@ class MyPlayer extends Entity {
         ['hurt', [8,9,8,9,8,9], { speed: 8, loop: false }],
         ['kill', [10,11,12,13], { speed: 8, loop: false }],
       ],
+      // You can set its anchor here
+      anchor: { x: 0.5, y: 0.5 },
     });
 
     console.log(SolidGroup);
@@ -79,11 +81,15 @@ class MyBox extends Entity {
       height: this.gfx.height,
       isStatic: true,
       collisionGroup: SolidGroup,
-      collideAgainst: PlayerGroup,
+
+      // You don't need this line if you don't need to check other colliders
+      // collideAgainst: PlayerGroup,
+
+      // And you don't need this method if you dont need to check others
       collide: (other) => {
         if (other.collisionGroup === PlayerGroup) {
-          // Always push player back when collide against a "solid" thing
-          return true;
+          // Return false so that others won't push self to move
+          return false;
         }
       }
     });
@@ -108,6 +114,7 @@ class MyGame extends Game {
         solver: new AABBSolver()
       }));
 
+
     // Create some layers
     this.sysGfx
       .createLayer('background')
@@ -119,7 +126,6 @@ class MyGame extends Game {
     this.text = this.spawnEntity(MyBox, core.width / 2, core.height / 2, 'actors');
 
     this.monster = this.spawnEntity(MyPlayer, 100, 100, 'actors');
-    this.monster.gfx.anchor.set(0.5);
     this.monster.gfx.play('fly');
 
     this.sysInput.bind('SPACE', 'attackAnim');
@@ -136,26 +142,31 @@ class MyGame extends Game {
       });;
     }
 
+    // Use velocity instead of modifying position directly
+    this.monster.coll.velocity.set(0);
     if (this.sysInput.state('move_left')) {
       this.monster.gfx.scale.x = -1;
-      this.monster.position.x -= 4;
+      this.monster.coll.velocity.x = -100;
     }
 
     if (this.sysInput.state('move_right')) {
       this.monster.gfx.scale.x = 1;
-      this.monster.position.x += 4;
+      this.monster.coll.velocity.x = +100;
     }
 
     if (this.sysInput.state('move_up')) {
-      this.monster.position.y -= 4;
+      this.monster.coll.velocity.y = -100;
     }
 
     if (this.sysInput.state('move_down')) {
-      this.monster.position.y += 4;
+      this.monster.coll.velocity.y = +100;
     }
 
-    this.monster.gfx.x = this.monster.position.x;
-    this.monster.gfx.y = this.monster.position.y;
+    // Lines below is not necessary,
+    //  since Entity will sync `position`, `scale` and `rotation` between
+    //  its components (gfx, coll...)
+    // this.monster.gfx.x = this.monster.position.x;
+    // this.monster.gfx.y = this.monster.position.y;
 
     super.fixedUpdate(dt, sec);
   }
